@@ -1,8 +1,11 @@
-/**
- * API Client for Django REST Framework
- */
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://127.0.0.1:8000/api';
+  }
+  return 'https://erb-v-4-new.onrender.com/api';
+};
 
-const BASE_URL = 'http://127.0.0.1:8000/api';
+const BASE_URL = getBaseUrl();
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const currentUser = localStorage.getItem('factory_erp_current_user');
@@ -37,10 +40,9 @@ export const api = {
 
   // الأقمشة والخامات
   getFabrics: () => request<any[]>('/fabrics/'),
-  // توفير دالة الألوان لمنع خطأ TypeError
   getFabricColors: async () => [],
 
-  // الموردين والمقاسات (توفير الدوال حتى لا يتعطل الاستدعاء في AppContext)
+  // الموردين والمقاسات
   getSuppliers: async () => [],
   getSizeDefs: async () => [],
 
