@@ -1,3 +1,4 @@
+import { api } from '../api/client';
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import {
   User,
@@ -1343,6 +1344,69 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return [];
     }
   });
+
+
+  // جلب البيانات الحقيقية من خادم الباك اند عند بدء التشغيل
+  useEffect(() => {
+    let isMounted = true;
+
+    async function syncWithBackend() {
+      try {
+        const [
+          fetchedRoles,
+          fetchedUsers,
+          fetchedFabrics,
+          fetchedColors,
+          fetchedModels,
+          fetchedSuppliers,
+          fetchedSizes
+        ] = await Promise.allSettled([
+          api.getRoles(),
+          api.getUsers(),
+          api.getFabrics(),
+          api.getFabricColors(),
+          api.getModels(),
+          api.getSuppliers(),
+          api.getSizeDefs(),
+        ]);
+
+        if (!isMounted) return;
+
+        if (fetchedRoles.status === 'fulfilled' && fetchedRoles.value.length > 0) {
+          setRoles(fetchedRoles.value);
+        }
+        if (fetchedUsers.status === 'fulfilled' && fetchedUsers.value.length > 0) {
+          setUsers(fetchedUsers.value);
+        }
+        if (fetchedFabrics.status === 'fulfilled' && fetchedFabrics.value.length > 0) {
+          setFabrics(fetchedFabrics.value);
+        }
+        if (fetchedColors.status === 'fulfilled' && fetchedColors.value.length > 0) {
+          setFabricColors(fetchedColors.value);
+        }
+        if (fetchedModels.status === 'fulfilled' && fetchedModels.value.length > 0) {
+          setModels(fetchedModels.value);
+        }
+        if (fetchedSuppliers.status === 'fulfilled' && fetchedSuppliers.value.length > 0) {
+          setSuppliers(fetchedSuppliers.value);
+        }
+        if (fetchedSizes.status === 'fulfilled' && fetchedSizes.value.length > 0) {
+          setSizeDefs(fetchedSizes.value);
+        }
+
+        addFlashMessage('تم الاتصال بنجاح بقاعدة بيانات الباك اند الحية', 'success');
+      } catch (err) {
+        console.warn('تعذر الاتصال بالباك اند، تم التحويل لوضع التخزين المحلي:', err);
+      }
+    }
+
+    syncWithBackend();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
 
   // Auto-sync state to localStorage
   useEffect(() => {

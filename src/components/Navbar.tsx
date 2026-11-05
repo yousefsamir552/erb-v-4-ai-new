@@ -9,7 +9,7 @@ import {
   GitCommit,
   Settings,
   LogOut,
-  UserCheck,
+  User,
   ChevronDown,
   Menu,
   X,
@@ -32,8 +32,6 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLogout }) => {
   const { 
     currentUser, 
-    users, 
-    setCurrentUser, 
     hasPermission, 
     appNotifications, 
     unreadNotificationsCount, 
@@ -47,7 +45,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
 
   const isSudo = currentUser?.username === 'sudo' || currentUser?.is_sudo;
 
-  // Exact 7 navigation items as requested
   const allNavItems = [
     { 
       id: 'dashboard', 
@@ -174,7 +171,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleNavClick('dashboard')}
-              className="flex items-center gap-2 font-black text-lg text-slate-900 hover:opacity-90 transition group shrink-0"
+              className="flex items-center gap-2 font-black text-lg text-slate-900 hover:opacity-90 transition group shrink-0 cursor-pointer"
             >
               <span className="text-2xl group-hover:scale-110 transition-transform">🏭</span>
               <span className="tracking-tight hidden sm:inline">نظام إدارة المصنع</span>
@@ -192,7 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold transition-all duration-150 whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-bold transition-all duration-150 whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'bg-slate-900 text-white shadow-xs'
                       : 'text-slate-700 hover:bg-slate-100/90'
@@ -220,7 +217,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                   ? 'bg-indigo-50 border-indigo-300 text-indigo-700 hover:bg-indigo-100 shadow-xs'
                   : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200/80'
               }`}
-              title="المراسلات والمحادثات الداخلية بين المستخدمين"
+              title="المراسلات والمحادثات الداخلية"
             >
               <MessageSquare className="w-4 h-4" />
               {unreadMessagesCount > 0 && (
@@ -230,7 +227,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
               )}
             </button>
 
-            {/* Bell Icon & Notifications Dropdown */}
+            {/* Notifications Dropdown */}
             <div className="relative">
               <button
                 type="button"
@@ -243,7 +240,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                     ? 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100'
                     : 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200/80'
                 }`}
-                title="تنبيهات وإشعارات مواعيد الاستلام (المطابع وورش المكن)"
+                title="تنبيهات مواعيد الاستلام"
               >
                 <Bell className="w-4 h-4" />
                 {unreadNotificationsCount > 0 && (
@@ -253,7 +250,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                 )}
               </button>
 
-              {/* Notifications Dropdown Window */}
               {notificationsOpen && (
                 <div className="absolute start-0 sm:start-auto sm:end-0 mt-2 w-80 sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-150">
                   <div className="px-4 pb-2 border-b border-slate-100 flex items-center justify-between">
@@ -318,12 +314,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                               <span>الموقع: {notif.source_name}</span>
                               <span className="font-mono font-bold">تاريخ الاستلام: {notif.expected_date}</span>
                             </div>
-
-                            {isOverdue && (
-                              <p className="text-[10px] text-rose-700 font-extrabold bg-rose-100/80 px-2 py-0.5 rounded-lg mt-0.5">
-                                ⚠️ تنبيه متأخر: يظل هذا التنبيه نشطاً حتى تسجيل الاستلام بالفرز والكنترول.
-                              </p>
-                            )}
                           </div>
                         );
                       })
@@ -331,7 +321,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                       <div className="py-8 text-center text-slate-400">
                         <CheckCircle2 className="w-8 h-8 mx-auto mb-1 text-emerald-500" />
                         <p className="font-bold text-xs text-slate-700">لا توجد تنبيهات متأخرة أو عاجلة حالياً</p>
-                        <p className="text-[10px] text-slate-400">جميع تسليمات المطابع وورش المكن منتظمة</p>
                       </div>
                     )}
                   </div>
@@ -342,13 +331,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                         setCurrentTab('production_control');
                         setNotificationsOpen(false);
                       }}
-                      className="text-[11px] font-bold text-indigo-700 hover:underline"
+                      className="text-[11px] font-bold text-indigo-700 hover:underline cursor-pointer"
                     >
-                      فتح شاشة متابعة وتشغيل الإنتاج &larr;
+                      فتح شاشة متابعة الإنتاج &larr;
                     </button>
                     <button
                       onClick={() => setNotificationsOpen(false)}
-                      className="text-[11px] text-slate-400 hover:text-slate-600"
+                      className="text-[11px] text-slate-400 hover:text-slate-600 cursor-pointer"
                     >
                       إغلاق
                     </button>
@@ -357,7 +346,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
               )}
             </div>
 
-            {/* User Profile & Quick Switcher */}
+            {/* Profile Dropdown - معلومات الحساب وتسجيل الخروج فقط */}
             <div className="relative">
               <button
                 onClick={() => {
@@ -365,7 +354,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                   setNotificationsOpen(false);
                 }}
                 className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200/80 border border-slate-200 transition text-xs text-slate-800 font-semibold cursor-pointer"
-                title="تغيير المستخدم لاختبار الصلاحيات"
               >
                 <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
                   {currentUser?.real_name ? currentUser.real_name[0] : 'U'}
@@ -383,46 +371,23 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
                 <ChevronDown className="w-3 h-3 text-slate-500" />
               </button>
 
-              {/* Switch User Dropdown */}
               {userDropdownOpen && (
-                <div className="absolute start-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                  <div className="px-4 py-2 border-b border-slate-100">
-                    <p className="text-xs font-bold text-slate-400">تبديل حساب المستخدم (تجربة الصلاحيات)</p>
+                <div className="absolute start-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 py-3 z-50 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="px-4 pb-3 border-b border-slate-100 text-start">
+                    <p className="font-bold text-slate-900 text-sm">{currentUser?.real_name}</p>
+                    <p className="text-xs text-slate-500 font-mono">@{currentUser?.username}</p>
+                    <span className="inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                      {currentUser?.role || 'مستخدم النظام'}
+                    </span>
                   </div>
-                  <div className="max-h-64 overflow-y-auto py-1">
-                    {users.map((u) => (
-                      <button
-                        key={u.id}
-                        onClick={() => {
-                          setCurrentUser(u);
-                          setUserDropdownOpen(false);
-                        }}
-                        className={`w-full text-start px-4 py-2 text-xs flex items-center justify-between hover:bg-slate-50 transition ${
-                          currentUser?.id === u.id ? 'bg-blue-50/70 font-bold text-blue-900' : 'text-slate-700'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <UserCheck className={`w-4 h-4 ${currentUser?.id === u.id ? 'text-blue-600' : 'text-slate-400'}`} />
-                          <div>
-                            <p className="font-semibold">{u.real_name}</p>
-                            <p className="text-[10px] text-slate-400">@{u.username} • {u.role}</p>
-                          </div>
-                        </div>
-                        {currentUser?.id === u.id && (
-                          <span className="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full">
-                            الحالي
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="p-2 border-t border-slate-100">
+
+                  <div className="p-2">
                     <button
                       onClick={() => {
                         setUserDropdownOpen(false);
                         onLogout();
                       }}
-                      className="w-full flex items-center justify-center gap-2 text-xs text-rose-600 hover:bg-rose-50 font-bold py-2 rounded-xl transition"
+                      className="w-full flex items-center justify-center gap-2 text-xs text-rose-600 hover:bg-rose-50 font-bold py-2.5 rounded-xl transition cursor-pointer"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>تسجيل الخروج من النظام</span>
@@ -432,20 +397,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
               )}
             </div>
 
-            {/* Logout button */}
-            <button
-              onClick={onLogout}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-rose-300 text-rose-700 hover:bg-rose-50 text-xs font-bold transition shadow-xs"
-              title="خروج"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>خروج</span>
-            </button>
-
             {/* Mobile menu hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100"
+              className="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 cursor-pointer"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -475,7 +430,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, onLog
         )}
       </div>
 
-      {/* Internal Direct Messaging Modal */}
       <InternalMessagingModal
         isOpen={messagesModalOpen}
         onClose={() => setMessagesModalOpen(false)}
